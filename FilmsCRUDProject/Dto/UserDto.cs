@@ -1,9 +1,9 @@
 namespace FilmsCRUDProject.Dto;
 
-public class UserDto
+public record UserDto
 {
-	public string Email { get; set; }
-	public string Phone { get; set; }
-	public string Login { get; set; }
-	public string Password { get; set; }
+	public string Email { get; init; }
+	public string Phone { get; init; }
+	public string Login { get; init; }
+	public string Password { get; init; }
 }

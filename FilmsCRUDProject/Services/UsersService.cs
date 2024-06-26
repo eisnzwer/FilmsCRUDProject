@@ -17,14 +17,74 @@ public class UsersService
         _context = context;
     }
 
-    public async Task<List<UserDto>> GetAllUsers()
+    public async Task<List<UserDto>> GetAllUsers(UserFilterDto filter)
     {
-        var users = await _context.Users.ToListAsync();
+        var query = _context.Users.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Login))
+        {
+            query = query.Where(film => film.Login.Contains(filter.Login));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Email))
+        {
+            query = query.Where(film => film.Email.Contains(filter.Email));
+        }
+
+        if (!string.IsNullOrEmpty(filter.Phone))
+        {
+            query = query.Where(film => film.Phone.Contains(filter.Phone));
+        }
+
+        if (!string.IsNullOrEmpty(filter.SortBy))
+        {
+            if (filter.SortOrder?.ToUpper() == "DESC")
+            {
+                switch (filter.SortBy.ToLower())
+                {
+                    case "login":
+                        query = query.OrderByDescending(user => user.Login);
+                        break;
+                    case "email":
+                        query = query.OrderByDescending(user => user.Email);
+                        break;
+                    case "phone":
+                        query = query.OrderByDescending(user => user.Phone);
+                        break;
+                    default:
+                        query = query.OrderByDescending(user => user.Id);
+                        break;
+                }
+            }
+            else if (filter.SortOrder?.ToUpper() == "ASC")
+            {
+                switch (filter.SortBy.ToLower())
+                {
+                    case "login":
+                        query = query.OrderBy(user => user.Login);
+                        break;
+                    case "email":
+                        query = query.OrderBy(user => user.Email);
+                        break;
+                    case "phone":
+                        query = query.OrderBy(user => user.Phone);
+                        break;
+                    default:
+                        query = query.OrderBy(user => user.Id);
+                        break;
+                }
+            }
+        }
+        
+        var skipNumber = (filter.Page - 1) * filter.PageSize;
+        query = query.Skip(skipNumber).Take(filter.PageSize);
+
+        var users = await query.ToListAsync();
         return users.Select(user => new UserDto
         {
+            Login = user.Login,
             Email = user.Email,
             Phone = user.Phone,
-            Login = user.Login,
             Password = user.Password
         }).ToList();
     }

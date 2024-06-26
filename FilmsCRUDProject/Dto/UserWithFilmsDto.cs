@@ -1,6 +1,6 @@
 namespace FilmsCRUDProject.Dto;
 
-public class UserWithFilmsDto
+public record UserWithFilmsDto
 {
-	public List<FilmDto> Films { get; set; }
+	public List<FilmDto> Films { get; init; }
 }

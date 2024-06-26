@@ -18,10 +18,10 @@ public class UsersController : ControllerBase
 		_userDtoValidator = userDtoValidator;
 	}
 
-	[HttpGet]
-	public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+	[HttpGet("all")]
+	public async Task<ActionResult<List<UserDto>>> GetAllUsers([FromQuery] UserFilterDto filter)
 	{
-		var users = await _usersService.GetAllUsers();
+		var users = await _usersService.GetAllUsers(filter);
 		return Ok(users);
 	}
 

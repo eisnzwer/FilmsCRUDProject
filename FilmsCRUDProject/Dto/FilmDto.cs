@@ -1,8 +1,8 @@
 namespace FilmsCRUDProject.Dto;
 
-public class FilmDto
+public record FilmDto
 {
-	public string Name { get; set; }
-	public string Producer { get; set; }
-	public int Year { get; set; }
+	public string Name { get; init; }
+	public string Producer { get; init; }
+	public int Year { get; init; }
 }

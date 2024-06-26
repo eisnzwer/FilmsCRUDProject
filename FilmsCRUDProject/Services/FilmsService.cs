@@ -17,9 +17,67 @@ public class FilmsService
         _context = context;
     }
 
-    public async Task<List<FilmDto>> GetAllFilms()
+    public async Task<List<FilmDto>> GetAllFilms(FilmFilterDto filter)
     {
-        var films = await _context.Films.ToListAsync();
+        var query = _context.Films.AsQueryable();
+
+        if (!string.IsNullOrEmpty(filter.Name))
+        {
+            query = query.Where(f => f.Name.Contains(filter.Name));
+        }
+        if (!string.IsNullOrEmpty(filter.Producer))
+        {
+            query = query.Where(f => f.Producer.Contains(filter.Producer));
+        }
+        if (filter.Year.HasValue)
+        {
+            query = query.Where(f => f.Year == filter.Year.Value);
+        }
+
+        if (!string.IsNullOrEmpty(filter.SortBy))
+        {
+            if (filter.SortOrder?.ToUpper() == "DESC")
+            {
+                switch (filter.SortBy.ToLower())
+                {
+                    case "name":
+                        query = query.OrderByDescending(f => f.Name);
+                        break;
+                    case "producer":
+                        query = query.OrderByDescending(f => f.Producer);
+                        break;
+                    case "year":
+                        query = query.OrderByDescending(f => f.Year);
+                        break;
+                    default:
+                        query = query.OrderByDescending(f => f.Id);
+                        break;
+                }
+            }
+            else if (filter.SortOrder?.ToUpper() == "ASC")
+            {
+                switch (filter.SortBy.ToLower())
+                {
+                    case "name":
+                        query = query.OrderBy(f => f.Name);
+                        break;
+                    case "producer":
+                        query = query.OrderBy(f => f.Producer);
+                        break;
+                    case "year":
+                        query = query.OrderBy(f => f.Year);
+                        break;
+                    default:
+                        query = query.OrderBy(f => f.Id);
+                        break;
+                }
+            }
+        }
+        
+        var skipNumber = (filter.Page - 1) * filter.PageSize;
+        query = query.Skip(skipNumber).Take(filter.PageSize);
+
+        var films = await query.ToListAsync();
         return films.Select(film => new FilmDto
         {
             Name = film.Name,
@@ -27,6 +85,8 @@ public class FilmsService
             Year = film.Year
         }).ToList();
     }
+
+
 
     public async Task<FilmDto> GetFilmById(int id)
     {

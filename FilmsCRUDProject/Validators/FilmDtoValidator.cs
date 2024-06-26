@@ -7,19 +7,19 @@ public class FilmDtoValidator : AbstractValidator<FilmDto>
 {
 	public FilmDtoValidator()
 	{
-		RuleFor(x => x.Name)
+		RuleFor(filmDto => filmDto.Name)
 			.NotEmpty()
 			.WithMessage("Название фильма должно быть указано");
 		
-		RuleFor(x => x.Producer)
+		RuleFor(filmDto => filmDto.Producer)
 			.NotEmpty()
 			.WithMessage("Имя режиссера должно быть указано");
 		
-		RuleFor(x => x.Year)
+		RuleFor(filmDto => filmDto.Year)
 			.NotEmpty()
 			.WithMessage("Год выпуска фильма должен быть указан");
 		
-		RuleFor(x => x.Year)
+		RuleFor(filmDto => filmDto.Year)
 			.InclusiveBetween(1800, DateTime.UtcNow.Year)
 			.WithMessage("Год выпуска фильма должен быть валидным");
 	}

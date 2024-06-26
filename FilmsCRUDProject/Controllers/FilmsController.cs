@@ -19,9 +19,9 @@ public class FilmsController : ControllerBase
 	}
 
 	[HttpGet("all")]
-	public async Task<ActionResult<List<FilmDto>>> GetAllFilms()
+	public async Task<ActionResult<List<FilmDto>>> GetAllFilms([FromQuery] FilmFilterDto filter)
 	{
-		var films = await _filmsService.GetAllFilms();
+		var films = await _filmsService.GetAllFilms(filter);
 		return Ok(films);
 	}
 
